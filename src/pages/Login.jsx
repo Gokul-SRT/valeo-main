@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Input, Button, Form, message } from "antd";
 import { useNavigate } from "react-router-dom";
+import store from 'store';
+import { login as apiLogin } from "../Api/service/demoapi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import image from "../assets/bgmobile.jpg";
 import logo from "../assets/logo.png";
@@ -16,19 +18,52 @@ const Login = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState("login"); // login | forgot | reset
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // 🔑 Login handler
   const onFinishLogin = (values) => {
     const { username, password } = values;
 
-    if (username === "smartrun" && password === "sradmin") {
-      localStorage.setItem("isAuthenticated", true);
-      localStorage.setItem("username", username);
-      message.success("Login successful! Redirecting to dashboard...");
-      navigate("/onboard?default=ProductionDashboard");
-    } else {
-      message.error("Invalid credentials");
-    }
+    // Call backend login API
+    setLoading(true);
+    apiLogin(username, password)
+      .then((res) => {
+        // normalize response shape: some backends return an array or nested data
+        const payload = Array.isArray(res) ? res[0] : (res?.data || res);
+        // debug
+        console.log('Login response payload', payload);
+
+        const accessToken = payload?.jwtToken || payload?.token || payload?.accessToken || null;
+        const refreshToken = payload?.refreshToken || null;
+        const user = payload?.user || payload || { username };
+
+        if (accessToken) {
+          // store token in the `store` module used by serverAPI interceptor
+          try {
+            store.set('accessToken', accessToken);
+          } catch (e) {
+            // fallback to localStorage
+            localStorage.setItem('accessToken', accessToken);
+          }
+          if (refreshToken) {
+            try { store.set('refreshToken', refreshToken); } catch (e) { localStorage.setItem('refreshToken', refreshToken); }
+          }
+          localStorage.setItem('isAuthenticated', 'true');
+          localStorage.setItem('username', user.username || username);
+          localStorage.setItem('user', JSON.stringify(user));
+
+          message.success('Login successful! Redirecting...');
+          // ensure navigation happens after storing tokens
+          setTimeout(() => navigate('/onboard?default=ProductionDashboard'), 100);
+        } else {
+          message.error(res?.responseMessage || 'Login failed');
+        }
+      })
+      .catch((err) => {
+        console.error('Login error', err);
+        message.error(err?.responseMessage || err?.message || 'Login failed');
+      })
+      .finally(() => setLoading(false));
   };
 
   const onSendOtp = (values) => {
@@ -76,7 +111,7 @@ const Login = () => {
           <div className="text-center mb-4">
             <strong className="fs-3 text-dark">
               <span style={{ color: "#ff5d22" }}>Smart</span>
-              <span className="text-primary">Run </span>Traceability
+              <span className="text-primary">Run </span>Valeo
             </strong>
           </div>
 
@@ -103,7 +138,7 @@ const Login = () => {
                 >
                   <Input.Password size="large" placeholder="Password" />
                 </Form.Item>
-                <Button type="primary" size="large" className="w-100" htmlType="submit">
+                <Button type="primary" size="large" className="w-100" htmlType="submit" loading={loading}>
                   <strong>Sign in</strong>
                 </Button>
               </Form>
