@@ -7,7 +7,9 @@ const apiServer = axios.create({
   // http://15.206.108.18/
   // http://10.130.15.79:5000/10.103.20.30
   // timeout: 1000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 
+    'Content-Type': 'application/json',                   
+   },
 })
 
 apiServer.interceptors.request.use(request => {

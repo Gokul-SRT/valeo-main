@@ -52,16 +52,20 @@ const Login = () => {
           localStorage.setItem('username', user.username || username);
           localStorage.setItem('user', JSON.stringify(user));
 
+          // Show success notification
           message.success('Login successful! Redirecting...');
+          
           // ensure navigation happens after storing tokens
           setTimeout(() => navigate('/onboard?default=ProductionDashboard'), 100);
         } else {
-          message.error(res?.responseMessage || 'Login failed');
+          // Show failure notification when no token is received
+          message.error(payload?.returnMsg || payload?.responseMessage || 'Login failed - Invalid credentials');
         }
       })
       .catch((err) => {
         console.error('Login error', err);
-        message.error(err?.responseMessage || err?.message || 'Login failed');
+        // Show failure notification for API errors
+        message.error(err?.response?.data?.message || err?.responseMessage || err?.message || 'Login failed');
       })
       .finally(() => setLoading(false));
   };

@@ -3,7 +3,7 @@ import { Menu } from "antd";
 import { 
   AppstoreOutlined,
   DeploymentUnitOutlined,
-  DashboardOutlined
+  DashboardOutlined,ToolOutlined 
 } from "@ant-design/icons";
 
 const Sidebar = ({ collapsed, selectedApp, selectedMenu, onMenuClick }) => {
@@ -57,8 +57,33 @@ const Sidebar = ({ collapsed, selectedApp, selectedMenu, onMenuClick }) => {
         { key: "Traceabilityreports1", label: "TraceabilityReports", url: "http://localhost:3001/Traceabilityreports1" },
         { key: "reversetraceabilityReports", label: "ReverseTraceabilityReports", url: "http://localhost:3001/reversetraceabilityReports" },
         { key: "tracemaster", label: "Traceability Master", url: "http://localhost:3001/tracemaster" },
+       
       ],
     },
+     {
+          key: "toolmonitoring", // FIXED: Removed extra spaces
+          label: "Tool Monitoring",
+          icon: <ToolOutlined />,
+          children: [
+            { key: "toolChange", label: "Tool Change", url: "http://localhost:3001/toolChange" },
+            { key: "ToolHistoryLog", label: "Tool History Log", url: "http://localhost:3001/ToolHistoryLog" },
+            {
+              key: "CriticalSparePartsList",
+              label: "Critical Spare Parts List",
+              url: "http://localhost:3001/CriticalSparePartsList"
+            },
+            {
+              key: "PreventiveMaintenanceCheckList",
+              label: "PM Checklist Log",
+              url: "http://localhost:3001/PreventiveMaintenanceCheckList"
+            },
+            {
+                key: "toolmonitoringmaster",
+                label: "Tool Monitoring Master",
+                url: "http://localhost:3001/toolmonitoringmaster"
+            },
+          ],
+        },
   ];
 
   return (

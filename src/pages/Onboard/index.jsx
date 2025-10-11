@@ -83,8 +83,32 @@ const Onboard = () => {
           { key: "Traceabilityreports1", label: "TraceabilityReports", url: "http://localhost:3001/Traceabilityreports1" },
           { key: "reversetraceabilityReports", label: "ReverseTraceabilityReports", url: "http://localhost:3001/reversetraceabilityReports" },
           { key: "tracemaster", label: "Traceability Master", url: "http://localhost:3001/tracemaster" },
+          
         ],
       },
+      {
+            key: "toolmonitoring", // FIXED: Removed extra spaces
+            label: "Tool Monitoring",
+            children: [
+              { key: "toolChange", label: "Tool Change", url: "http://localhost:3001/toolChange" },
+              { key: "ToolHistoryLog", label: "Tool History Log", url: "http://localhost:3001/ToolHistoryLog" },
+              {
+                key: "CriticalSparePartsList",
+                label: "Critical Spare Parts List",
+                url: "http://localhost:3001/CriticalSparePartsList"
+              },
+              {
+                key: "PreventiveMaintenanceCheckList",
+                label: "PM Checklist Log",
+                url: "http://localhost:3001/PreventiveMaintenanceCheckList"
+              },
+              {
+                key: "toolmonitoringmaster",
+                label: "Tool Monitoring Master",
+                url: "http://localhost:3001/toolmonitoringmaster"
+              },
+            ],
+          },
     ];
 
     menuItems.forEach(menu => {
