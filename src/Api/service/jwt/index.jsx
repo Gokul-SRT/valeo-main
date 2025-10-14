@@ -2,17 +2,18 @@ import apiClient from '../../fakeapi'
 import serverApi from '../serverAPI'
 import store from 'store'
 
-// Helper: Set cookie
+// 🔧 Helper: Set cookie
 function setCookie(name, value, days = 1) {
-  const expires = new Date(Date.now() + days * 864e5).toUTCString();
-  document.cookie = `${name}=${value}; path=/; SameSite=Lax; expires=${expires}`;
-  // For HTTPS cross-port in production, use:
-  // document.cookie = `${name}=${value}; path=/; SameSite=None; Secure; expires=${expires}`;
+  if (!value) return
+  const expires = new Date(Date.now() + days * 864e5).toUTCString()
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; SameSite=Lax; expires=${expires}`
+  // For production HTTPS:
+  // document.cookie = `${name}=${encodeURIComponent(value)}; path=/; SameSite=None; Secure; expires=${expires}`
 }
 
-// Helper: Delete cookie
+// 🔧 Helper: Delete cookie
 function deleteCookie(name) {
-  document.cookie = `${name}=; Max-Age=0; path=/`;
+  document.cookie = `${name}=; Max-Age=0; path=/`
 }
 
 export async function login(password, username) {
@@ -33,20 +34,49 @@ export async function login(password, username) {
         try { localStorage.setItem('accessToken', token) } catch (e) {}
         setCookie('accessToken', token) // ✅ store cookie
 
-        if (data.masterUserInfo) {
-          try { store.set('tenantId', data.masterUserInfo.tenantId) } catch(e){}
-          try { store.set('branchCode', data.masterUserInfo.branchCode) } catch(e){}
-          try { store.set('bgimg', data.masterUserInfo.backGroundIMGPath) } catch(e){}
-          try { store.set('logopath', data.masterUserInfo.logoIMGPath) } catch(e){}
-          try { store.set('firstname', data.masterUserInfo.userFirstName) } catch(e){}
-          try { store.set('lastname', data.masterUserInfo.userLastName) } catch(e){}
+        // ✅ Handle user details
+        const masterInfo = data.masterUserInfo || {}
+
+        const tenantId = masterInfo.tenantId || data.tenantId || data.tenantID || null
+        const branchCode = masterInfo.branchCode || data.branchCode || '1'
+        const empID = data.empID || masterInfo.empID || null
+
+        // ✅ Store in store + cookies
+        if (tenantId) {
+          try { store.set('tenantId', tenantId) } catch (e) {}
+          setCookie('tenantId', tenantId)
         }
 
-        try { store.set('adminname', data.name) } catch(e){}
-        try { store.set('adminrole', data.role) } catch(e){}
+        if (branchCode) {
+          try { store.set('branchCode', branchCode) } catch (e) {}
+          setCookie('branchCode', branchCode)
+        }
+
+        if (empID) {
+          try { store.set('empID', empID) } catch (e) {}
+          setCookie('empID', empID)
+        }
+
+        if (masterInfo.backGroundIMGPath)
+          try { store.set('bgimg', masterInfo.backGroundIMGPath) } catch (e) {}
+
+        if (masterInfo.logoIMGPath)
+          try { store.set('logopath', masterInfo.logoIMGPath) } catch (e) {}
+
+        if (masterInfo.userFirstName)
+          try { store.set('firstname', masterInfo.userFirstName) } catch (e) {}
+
+        if (masterInfo.userLastName)
+          try { store.set('lastname', masterInfo.userLastName) } catch (e) {}
+
+        if (data.name)
+          try { store.set('adminname', data.name) } catch (e) {}
+
+        if (data.role)
+          try { store.set('adminrole', data.role) } catch (e) {}
       }
 
-      try { setJwtFromResponse(data) } catch(e) {}
+      try { setJwtFromResponse(data) } catch (e) {}
 
       return data
     })
@@ -63,19 +93,34 @@ export function setJwtFromResponse(respData) {
 
   const token = data?.jwtToken || data?.token || data?.accessToken || null
   if (token) {
-    try { store.set('accessToken', token) } catch(e){}
-    try { localStorage.setItem('accessToken', token) } catch(e){}
-    setCookie('accessToken', token) // ✅ store cookie
+    try { store.set('accessToken', token) } catch (e) {}
+    try { localStorage.setItem('accessToken', token) } catch (e) {}
+    setCookie('accessToken', token)
   }
 
-  if (data?.tenantID) store.set('tenantId', data.tenantID)
-  else if (data?.tenantId) store.set('tenantId', data.tenantId)
-  else if (data?.masterUserInfo?.tenantId) store.set('tenantId', data.masterUserInfo.tenantId)
+  // ✅ Collect and store extra fields
+  const tenantId = 'valeo'
+  const branchCode = data?.branchCode || data?.masterUserInfo?.branchCode || '1'
+  const empID = data?.empID || data?.masterUserInfo?.empID
+
+  if (tenantId) {
+    try { store.set('tenantId', tenantId) } catch (e) {}
+    setCookie('tenantId', tenantId)
+  }
+
+  if (branchCode) {
+    try { store.set('branchCode', branchCode) } catch (e) {}
+    setCookie('branchCode', branchCode)
+  }
+
+  if (empID) {
+    try { store.set('empID', empID) } catch (e) {}
+    setCookie('empID', empID)
+  }
 
   if (data?.userName) store.set('username', data.userName)
   if (data?.empFirstNane) store.set('firstname', data.empFirstNane)
   if (data?.empLastName) store.set('lastname', data.empLastName)
-  if (data?.empID) store.set('empID', data.empID)
 
   if (data?.roleName) store.set('adminrole', data.roleName)
   if (data?.roleCode) store.set('roleCode', data.roleCode)
@@ -89,14 +134,31 @@ export async function register(email, password, name) {
     .post('/auth/register', { email, password, name })
     .then(response => {
       if (!response) return false
-      const { accessToken } = response.data
+      const { accessToken, tenantId, branchCode, empID } = response.data
+
       if (accessToken) {
         store.set('accessToken', accessToken)
         localStorage.setItem('accessToken', accessToken)
-        setCookie('accessToken', accessToken) // ✅ store cookie
-        store.set('tenantId', 're')
-        store.set('branchCode', 'rev')
+        setCookie('accessToken', accessToken)
       }
+
+      if (tenantId) {
+        store.set('tenantId', tenantId)
+        setCookie('tenantId', tenantId)
+      }
+
+      if (branchCode) {
+        store.set('branchCode', branchCode)
+        setCookie('branchCode', branchCode)
+      } else {
+        setCookie('branchCode', '1') // default branchCode = 1
+      }
+
+      if (empID) {
+        store.set('empID', empID)
+        setCookie('empID', empID)
+      }
+
       return response.data
     })
     .catch(err => console.error(err))
@@ -118,8 +180,15 @@ export async function logout() {
     .get('/auth/logout')
     .then(() => {
       store.remove('accessToken')
+      store.remove('tenantId')
+      store.remove('branchCode')
+      store.remove('empID')
+
       localStorage.removeItem('accessToken')
-      deleteCookie('accessToken') // ✅ remove cookie
+      deleteCookie('accessToken')
+      deleteCookie('tenantId')
+      deleteCookie('branchCode')
+      deleteCookie('empID')
       return true
     })
     .catch(err => console.error(err))
