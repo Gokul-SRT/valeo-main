@@ -43,6 +43,32 @@ export default function HeaderBar({ collapsed, toggleSidebar, showBackButton, on
           alignItems: "center",
           gap: "20px"
         }}>
+           {/* Menu Icon */}
+          <MenuOutlined
+            onClick={toggleSidebar}
+            style={{ 
+              fontSize: 20, 
+              cursor: "pointer",
+              padding: "4px",
+              marginLeft: "16px",
+            }}
+            
+          />
+           {/* Back Button */}
+          {showBackButton && (
+            <ArrowLeftOutlined
+              onClick={onBack}
+              style={{ 
+                fontSize: 16, 
+                cursor: "pointer",
+                padding: "4px",
+                transition: "color 0.2s",
+              }} 
+              onMouseEnter={(e) => e.target.style.color = "#1890ff"}
+              onMouseLeave={(e) => e.target.style.color = "#fff"}
+            />
+          )}
+
           {/* Logo */}
           <div style={{ 
             width: 32, 
@@ -64,21 +90,7 @@ export default function HeaderBar({ collapsed, toggleSidebar, showBackButton, on
             />
           </div>
 
-          {/* Back Button */}
-          {showBackButton && (
-            <ArrowLeftOutlined
-              onClick={onBack}
-              style={{ 
-                fontSize: 16, 
-                cursor: "pointer",
-                padding: "4px",
-                transition: "color 0.2s",
-              }} 
-              onMouseEnter={(e) => e.target.style.color = "#1890ff"}
-              onMouseLeave={(e) => e.target.style.color = "#fff"}
-            />
-          )}
-
+         
           {/* Current App or Company Name */}
           <span style={{ 
             fontSize: 18, 
@@ -89,16 +101,7 @@ export default function HeaderBar({ collapsed, toggleSidebar, showBackButton, on
             {currentApp || "Smartrun"}
           </span>
 
-          {/* Menu Icon */}
-          <MenuOutlined
-            onClick={toggleSidebar}
-            style={{ 
-              fontSize: 20, 
-              cursor: "pointer",
-              padding: "4px",
-              marginLeft: "16px",
-            }}
-          />
+         
         </div>
         
         <div style={{ 
