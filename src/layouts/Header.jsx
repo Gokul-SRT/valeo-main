@@ -13,6 +13,7 @@ export default function HeaderBar({ collapsed, toggleSidebar, showBackButton, on
 
   const logout = () => {
     localStorage.removeItem("isAuthenticated");
+    localStorage.clear()
     navigate("/login");
   };
 

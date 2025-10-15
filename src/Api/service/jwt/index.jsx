@@ -189,6 +189,7 @@ export async function logout() {
       deleteCookie('tenantId')
       deleteCookie('branchCode')
       deleteCookie('empID')
+      localStorage.clear()
       return true
     })
     .catch(err => console.error(err))
