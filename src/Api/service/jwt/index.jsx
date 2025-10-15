@@ -38,7 +38,7 @@ export async function login(password, username) {
         const masterInfo = data.masterUserInfo || {}
 
         const tenantId = masterInfo.tenantId || data.tenantId || data.tenantID || null
-        const branchCode = masterInfo.branchCode || data.branchCode || '1'
+        const branchCode = masterInfo.branchCode || data.branchCode || 'valeoche'
         const empID = data.empID || masterInfo.empID || null
 
         // ✅ Store in store + cookies
@@ -100,7 +100,7 @@ export function setJwtFromResponse(respData) {
 
   // ✅ Collect and store extra fields
   const tenantId = 'valeo'
-  const branchCode = data?.branchCode || data?.masterUserInfo?.branchCode || '1'
+  const branchCode = data?.branchCode || data?.masterUserInfo?.branchCode || 'valeoche'
   const empID = data?.empID || data?.masterUserInfo?.empID
 
   if (tenantId) {
@@ -151,7 +151,7 @@ export async function register(email, password, name) {
         store.set('branchCode', branchCode)
         setCookie('branchCode', branchCode)
       } else {
-        setCookie('branchCode', '1') // default branchCode = 1
+        setCookie('branchCode', 'valeoche') // default branchCode = valeoche
       }
 
       if (empID) {
