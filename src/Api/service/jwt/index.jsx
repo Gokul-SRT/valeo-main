@@ -38,7 +38,7 @@ export async function login(password, username) {
         const masterInfo = data.masterUserInfo || {}
 
         const tenantId = masterInfo.tenantId || data.tenantId || data.tenantID || null
-        const branchCode = masterInfo.branchCode || data.branchCode || 'valeoche'
+        const branchCode = masterInfo.branchCode || data.branchCode || 'AVAL_ORG'
         const empID = data.empID || masterInfo.empID || null
 
         // ✅ Store in store + cookies
@@ -151,7 +151,7 @@ export async function register(email, password, name) {
         store.set('branchCode', branchCode)
         setCookie('branchCode', branchCode)
       } else {
-        setCookie('branchCode', 'valeoche') // default branchCode = valeoche
+        setCookie('branchCode', 'AVAL_ORG') // default branchCode = AVAL_ORG
       }
 
       if (empID) {
