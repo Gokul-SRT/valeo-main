@@ -8,7 +8,7 @@ const MainLayout = ({ collapsed, selectedApp, children }) => {
     <Layout
       style={{
         marginLeft: collapsed ? 80 : 250,
-        marginTop: 0,
+        marginTop: 75,
         transition: "all 0.2s",
         minHeight: "calc(100vh - 64px)",
       }}
