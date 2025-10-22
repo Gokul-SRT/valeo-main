@@ -37,7 +37,7 @@ export async function login(password, username) {
         // ✅ Handle user details
         const masterInfo = data.masterUserInfo || {}
 
-        const tenantId = masterInfo.tenantId || data.tenantId || data.tenantID || null
+        const tenantId = masterInfo.tenantId || data.tenantId || data.tenantID || 'valeo'
         const branchCode = masterInfo.branchCode || data.branchCode || 'AVAL_ORG'
         const empID = data.empID || masterInfo.empID || null
 
@@ -100,7 +100,7 @@ export function setJwtFromResponse(respData) {
 
   // ✅ Collect and store extra fields
   const tenantId = 'valeo'
-  const branchCode = data?.branchCode || data?.masterUserInfo?.branchCode || 'valeoche'
+  const branchCode = data?.branchCode || data?.masterUserInfo?.branchCode || 'AVAL_ORG'
   const empID = data?.empID || data?.masterUserInfo?.empID
 
   if (tenantId) {
