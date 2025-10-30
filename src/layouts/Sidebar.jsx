@@ -48,7 +48,7 @@ const Sidebar = ({ collapsed, selectedApp, selectedMenu, onMenuClick }) => {
         { key: "storeReturnable", label: "Store Returnable", url: `http://${host}:3001/storeReturnable` },
         { key: "line-side-child-part-verification-screen", label: "Line side child part verification screen", url: `http://${host}:3001/line-side-child-part-verification-screen` },
         { key: "Kittingprocessscreen", label: "Kitting process screen", url: `http://${host}:3001/Kittingprocessscreen` },
-        { key: "A2-B2-label-print-screen", label: "A2 and B2 type label print screen", url: `http://${host}:3001/A2-B2-label-print-screen` },
+        { key: "picklistprint", label: "A2 and B2 type label print screen", url: `http://${host}:3001/picklistprint` },
         { key: "lineDashboard", label: "Line Dashboard", url: `http://${host}:3001/lineDashboard` },
         { key: "traceabilityReports", label: "Reports", url: `http://${host}:3001/traceabilityReports` },
         { key: "linefeeder", label: "Line Feeder", url: `http://${host}:3001/linefeeder` },
