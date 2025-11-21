@@ -3,13 +3,14 @@ import store from 'store'
 import { notification } from 'antd'
 
 const apiServer = axios.create({
-  baseURL: 'http://localhost:8901/',
+  baseURL: `http://${window.location.hostname}:8901/`,
   // http://15.206.108.18/
   // http://10.130.15.79:5000/10.103.20.30
   // timeout: 1000,
   headers: { 
     'Content-Type': 'application/json',                   
    },
+    withCredentials: true,
 })
 
 apiServer.interceptors.request.use(request => {
