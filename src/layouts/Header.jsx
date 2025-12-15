@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
+import SmartRunLogo from "../assets/SmartRun.png";
 
 const { Header } = Layout;
 
@@ -84,9 +85,8 @@ export default function HeaderBar({
           )}
 
           {/* Logo */}
-          <div
+          <span
             style={{
-              width: 32,
               height: 32,
               display: "flex",
               alignItems: "center",
@@ -98,33 +98,26 @@ export default function HeaderBar({
               src={logo}
               alt="Smartrun Logo"
               style={{
-                width: "100%",
+                width:32,
                 height: "100%",
                 objectFit: "contain",
                 borderRadius: "4px",
               }}
             />
-          </div>
-
-          {/* Current App or Company Name */}
-          <span
-            style={{
-              fontSize: 18,
-              fontFamily: "'Century Gothic', sans-serif",
-              transition: "opacity 0.3s ease-in-out",
-              whiteSpace: "nowrap",
-              marginTop:"10px"
-            }}
-          >
-            {currentApp || (
-              <div className="text-center mb-1">
-                <strong className="fs-4 text-dark">
-                  <span style={{ color: "#ff5d22" }}>Smart</span>
-                  <span className="text-primary">Run </span>
-                </strong>
-              </div>
+                        {currentApp || (
+                <img
+                  src={SmartRunLogo}
+                  alt="Smartrun Logo"
+                  style={{
+                    width: 180,
+                    height: "100%",
+                    objectFit: "contain",
+                    borderRadius: "4px",
+                  }}
+                />
             )}
           </span>
+
         </div>
 
         <div

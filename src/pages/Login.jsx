@@ -7,6 +7,7 @@ import { login as apiLogin } from "../Api/service/demoapi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import image from "../assets/bgmobile.jpg";
 import logo from "../assets/logo.png";
+import SmartRunLogo from "../assets/SmartRun.png";
 
 const mapStateToProps = ({ user, settings }) => ({
   user,
@@ -98,10 +99,16 @@ const Login = () => {
       <nav className="navbar navbar-light bg-white shadow-sm px-3">
         <div className="d-flex align-items-center">
           <img src={logo} alt="SmartRun Logo" height="40" className="me-2" />
-          <span className="fw-bold fs-5 text-dark">
-            <span style={{ color: "#ff5d22" }}>Smart</span>
-            <span className="text-primary">Run</span>
-          </span>
+         <img
+                  src={SmartRunLogo}
+                  alt="Smartrun Logo"
+                  style={{
+                    width: 180,
+                    height: "100%",
+                    objectFit: "contain",
+                    borderRadius: "4px",
+                  }}
+                />
         </div>
       </nav>
 
@@ -112,10 +119,18 @@ const Login = () => {
           style={{ maxWidth: "450px", width: "100%", borderRadius: "12px" }}
         >
           {/* Title */}
-          <div className="text-center mb-4">
-            <strong className="fs-3 text-dark">
-              <span style={{ color: "#ff5d22" }}>Smart</span>
-              <span className="text-primary">Run </span>Valeo
+          <div className="d-flex justify-content-center align-items-center mb-4">
+                        <img
+                  src={SmartRunLogo}
+                  alt="Smartrun Logo"
+                  style={{
+                    width: 180,
+                    height: "100%",
+                    objectFit: "contain",
+                    borderRadius: "4px",
+                  }}
+                />
+            <strong style={{color:"#82E600",fontSize:'30px'}}>Valeo
             </strong>
           </div>
 
