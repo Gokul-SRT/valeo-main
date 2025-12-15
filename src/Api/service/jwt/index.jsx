@@ -152,6 +152,10 @@ export async function login(password, username) {
           try {
             store.set("adminrole", data.role);
           } catch (e) {}
+           if (data.roleid)
+          try {
+            store.set("roleId", data.roleid);
+          } catch (e) {}
       }
 
       try {
@@ -236,6 +240,8 @@ export function setJwtFromResponse(respData) {
 
   if (data?.landingPageId) store.set("landingPageId", data.landingPageId);
 
+  if (data?.user) store.set("roleId", data?.roleid);
+
   if (data?.userRoleList?.[0]?.uiModuleMstlist) {
     localStorage.setItem(
       "ModuleData",
@@ -286,6 +292,8 @@ export function setJwtFromResponse(respData) {
 
     setCookie("traceabilityMaster", JSON.stringify(minimizedTraceabilityList));
 
+    setCookie("roleId", data?.roleid);
+
     // Verify cookies were set
 
     setTimeout(() => {
@@ -294,6 +302,8 @@ export function setJwtFromResponse(respData) {
       console.log("pmsReport:", getCookie("pmsReport"));
 
       console.log("pmsMaster:", getCookie("pmsMaster"));
+
+      console.log("roleId:", getCookie("roleId"));
 
       console.log("traceabilityMaster:", getCookie("traceabilityMaster"));
     }, 100);
@@ -387,6 +397,8 @@ export async function logout() {
       deleteCookie("empID");
 
       deleteCookie("pmsMaster");
+
+      deleteCookie("roleId");
 
       deleteCookie("pmsReport");
 
