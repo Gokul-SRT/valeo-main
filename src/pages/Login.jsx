@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Input, Button, Form, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import store from 'store';
+import store from "store";
 import { login as apiLogin } from "../Api/service/demoapi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import image from "../assets/bgmobile.jpg";
 import logo from "../assets/logo.png";
 import SmartRunLogo from "../assets/SmartRun.png";
+import valeo from "../assets/valeo.png";
 
 const mapStateToProps = ({ user, settings }) => ({
   user,
@@ -18,7 +19,7 @@ const mapStateToProps = ({ user, settings }) => ({
 const Login = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState("login"); // login | forgot | reset
-  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(false);
 
   // 🔑 Login handler
@@ -30,50 +31,67 @@ const Login = () => {
     apiLogin(username, password)
       .then((res) => {
         // normalize response shape: some backends return an array or nested data
-        const payload = Array.isArray(res) ? res[0] : (res?.data || res);
+        const payload = Array.isArray(res) ? res[0] : res?.data || res;
         // debug
-        console.log('Login response payload', payload);
+        console.log("Login response payload", payload);
 
-        const accessToken = payload?.jwtToken || payload?.token || payload?.accessToken || null;
+        const accessToken =
+          payload?.jwtToken || payload?.token || payload?.accessToken || null;
         const refreshToken = payload?.refreshToken || null;
         const user = payload?.user || payload || { username };
 
         if (accessToken) {
           // store token in the `store` module used by serverAPI interceptor
           try {
-            store.set('accessToken', accessToken);
+            store.set("accessToken", accessToken);
           } catch (e) {
             // fallback to localStorage
-            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem("accessToken", accessToken);
           }
           if (refreshToken) {
-            try { store.set('refreshToken', refreshToken); } catch (e) { localStorage.setItem('refreshToken', refreshToken); }
+            try {
+              store.set("refreshToken", refreshToken);
+            } catch (e) {
+              localStorage.setItem("refreshToken", refreshToken);
+            }
           }
-          localStorage.setItem('isAuthenticated', 'true');
-          localStorage.setItem('username', user.username || username);
-          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem("isAuthenticated", "true");
+          localStorage.setItem("username", user.username || username);
+          localStorage.setItem("user", JSON.stringify(user));
 
           // Show success notification
-          message.success('Login successful! Redirecting...');
-          
+          message.success("Login successful! Redirecting...");
+
           // ensure navigation happens after storing tokens
-          setTimeout(() => navigate('/onboard?default=ProductionDashboard'), 100);
+          setTimeout(
+            () => navigate("/onboard?default=ProductionDashboard"),
+            100
+          );
         } else {
           // Show failure notification when no token is received
-          message.error(payload?.returnMsg || payload?.responseMessage || 'Login failed - Invalid credentials');
+          message.error(
+            payload?.returnMsg ||
+              payload?.responseMessage ||
+              "Login failed - Invalid credentials"
+          );
         }
       })
       .catch((err) => {
-        console.error('Login error', err);
+        console.error("Login error", err);
         // Show failure notification for API errors
-        message.error(err?.response?.data?.message || err?.responseMessage || err?.message || 'Login failed');
+        message.error(
+          err?.response?.data?.message ||
+            err?.responseMessage ||
+            err?.message ||
+            "Login failed"
+        );
       })
       .finally(() => setLoading(false));
   };
 
   const onSendOtp = (values) => {
-    setEmail(values.email);
-    message.success(`OTP sent to ${values.email}`);
+    setUserName(values.userName);
+    message.success(`OTP sent to ${values.userName}`);
     setStep("reset");
   };
 
@@ -99,16 +117,16 @@ const Login = () => {
       <nav className="navbar navbar-light bg-white shadow-sm px-3">
         <div className="d-flex align-items-center">
           <img src={logo} alt="SmartRun Logo" height="40" className="me-2" />
-         <img
-                  src={SmartRunLogo}
-                  alt="Smartrun Logo"
-                  style={{
-                    width: 180,
-                    height: "100%",
-                    objectFit: "contain",
-                    borderRadius: "4px",
-                  }}
-                />
+          <img
+            src={SmartRunLogo}
+            alt="Smartrun Logo"
+            style={{
+              width: 180,
+              height: "100%",
+              objectFit: "contain",
+              borderRadius: "4px",
+            }}
+          />
         </div>
       </nav>
 
@@ -120,18 +138,19 @@ const Login = () => {
         >
           {/* Title */}
           <div className="d-flex justify-content-center align-items-center mb-4">
-                        <img
-                  src={SmartRunLogo}
-                  alt="Smartrun Logo"
-                  style={{
-                    width: 180,
-                    height: "100%",
-                    objectFit: "contain",
-                    borderRadius: "4px",
-                  }}
-                />
-            <strong style={{color:"#82E600",fontSize:'30px'}}>Valeo
-            </strong>
+            <img
+              src={valeo}
+              alt="Valeo Logo"
+              style={{
+                width: 150,
+                height: "100%",
+                objectFit: "contain",
+                borderRadius: "4px",
+              }}
+            />
+            {/* <strong style={{ color: "#82E600", fontSize: "30px" }}>
+              Valeo
+            </strong> */}
           </div>
 
           {/* Dynamic content */}
@@ -147,17 +166,27 @@ const Login = () => {
               >
                 <Form.Item
                   name="username"
-                  rules={[{ required: true, message: "Please input your username" }]}
+                  rules={[
+                    { required: true, message: "Please input your username" },
+                  ]}
                 >
                   <Input size="large" placeholder="Username" />
                 </Form.Item>
                 <Form.Item
                   name="password"
-                  rules={[{ required: true, message: "Please input your password" }]}
+                  rules={[
+                    { required: true, message: "Please input your password" },
+                  ]}
                 >
                   <Input.Password size="large" placeholder="Password" />
                 </Form.Item>
-                <Button type="primary" size="large" className="w-100" htmlType="submit" loading={loading}>
+                <Button
+                  type="primary"
+                  size="large"
+                  className="w-100"
+                  htmlType="submit"
+                  loading={loading}
+                >
                   <strong>Sign in</strong>
                 </Button>
               </Form>
@@ -181,10 +210,10 @@ const Login = () => {
               </div>
               <Form layout="vertical" onFinish={onSendOtp}>
                 <Form.Item
-                  name="email"
-                  rules={[{ required: true, message: "Please enter your email" }]}
+                  name="userName"
+                  rules={[{ required: true, message: "Enter User Name" }]}
                 >
-                  <Input placeholder="Enter your email" />
+                  <Input placeholder="Enter User Name" />
                 </Form.Item>
                 <Button type="primary" htmlType="submit" block>
                   Send OTP
