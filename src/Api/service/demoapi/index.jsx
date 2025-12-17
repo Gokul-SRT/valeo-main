@@ -52,7 +52,7 @@ export const login = async (username, password) => {
 export async function generateOTP(userName) {
   return serverApi
     .post(
-      "generateOTP",
+      "generateOtp",
       { userName, tenantId:'valeo' },
       { headers: { "Content-Type": "application/json" } }
     )
@@ -65,7 +65,7 @@ export async function generateOTP(userName) {
 export async function verifyOTP(userName, otp) {
   return serverApi
     .post(
-      "verifyOTP",
+      "verifyOtp",
       { userName, otp, tenantId:'valeo' },
       { headers: { "Content-Type": "application/json" } }
     )

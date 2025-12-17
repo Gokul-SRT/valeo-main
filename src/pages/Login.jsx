@@ -14,6 +14,7 @@ import image from "../assets/bgmobile.jpg";
 import logo from "../assets/logo.png";
 import SmartRunLogo from "../assets/SmartRun.png";
 import valeo from "../assets/valeo.png";
+import { toast } from "react-toastify";
 
 const mapStateToProps = ({ user, settings }) => ({
   user,
@@ -68,7 +69,7 @@ const Login = () => {
           localStorage.setItem("user", JSON.stringify(user));
 
           // Show success notification
-          message.success("Login successful! Redirecting...");
+          toast.success("Login successful! Redirecting...");
 
           // ensure navigation happens after storing tokens
           setTimeout(
@@ -77,7 +78,7 @@ const Login = () => {
           );
         } else {
           // Show failure notification when no token is received
-          message.error(
+          toast.error(
             payload?.returnMsg ||
               payload?.responseMessage ||
               "Login failed - Invalid credentials"
@@ -87,7 +88,7 @@ const Login = () => {
       .catch((err) => {
         console.error("Login error", err);
         // Show failure notification for API errors
-        message.error(
+        toast.error(
           err?.response?.data?.message ||
             err?.responseMessage ||
             err?.message ||
@@ -104,16 +105,16 @@ const Login = () => {
       setUserName(values.userName);
 
       const res = await generateOTP(values.userName);
-
+      
       if (res?.responseCode === "200") {
-        message.success(res.responseMessage || "OTP sent successfully");
+        toast.success(res.responseDataMessage || "OTP sent successfully");
         setStep("reset");
         setOtpVerified(false); // reset state
       } else {
-        message.error(res?.responseMessage || "Failed to send OTP");
+        toast.error(res?.responseDataMessage || "Failed to send OTP");
       }
     } catch (err) {
-      message.error("Failed to send OTP");
+      toast.error("Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -126,14 +127,14 @@ const Login = () => {
       const res = await verifyOTP(userName, otp);
 
       if (res?.responseCode === "200") {
-        message.success("OTP verified successfully");
+        toast.success("OTP verified successfully");
         setOtpVerified(true);
       } else {
-        message.error(res?.responseMessage || "Invalid OTP");
+        toast.error(res?.responseMessage || "Invalid OTP");
         setOtpVerified(false);
       }
     } catch (err) {
-      message.error("OTP verification failed");
+      toast.error("OTP verification failed");
       setOtpVerified(false);
     } finally {
       setOtpLoading(false);
@@ -142,7 +143,7 @@ const Login = () => {
 
   const onResetPassword = async (values) => {
     if (!otpVerified) {
-      message.error("Please verify OTP first");
+      toast.error("Please verify OTP first");
       return;
     }
 
@@ -152,13 +153,13 @@ const Login = () => {
       const res = await resetPassword(userName, values.newPassword);
 
       if (res?.responseCode === "200") {
-        message.success("Password reset successful! Please login again.");
+        toast.success("Password reset successful! Please login again.");
         setStep("login");
       } else {
-        message.error(res?.responseMessage || "Reset password failed");
+        toast.error(res?.responseMessage || "Reset password failed");
       }
     } catch (err) {
-      message.error("Reset password failed");
+      toast.error("Reset password failed");
     } finally {
       setResetLoading(false);
     }
@@ -318,7 +319,7 @@ const Login = () => {
                           'input[placeholder="Enter OTP"]'
                         )?.value;
                         if (!otp) {
-                          message.error("Please enter OTP");
+                          toast.error("Please enter OTP");
                           return;
                         }
                         onVerifyOtp(otp);
