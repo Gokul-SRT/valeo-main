@@ -3,7 +3,12 @@ import { connect } from "react-redux";
 import { Input, Button, Form, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import store from "store";
-import { login as apiLogin } from "../Api/service/demoapi";
+import {
+  login as apiLogin,
+  generateOTP,
+  resetPassword,
+  verifyOTP,
+} from "../Api/service/demoapi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import image from "../assets/bgmobile.jpg";
 import logo from "../assets/logo.png";
@@ -21,6 +26,9 @@ const Login = () => {
   const [step, setStep] = useState("login"); // login | forgot | reset
   const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   // 🔑 Login handler
   const onFinishLogin = (values) => {
@@ -89,18 +97,70 @@ const Login = () => {
       .finally(() => setLoading(false));
   };
 
-  const onSendOtp = (values) => {
-    setUserName(values.userName);
-    message.success(`OTP sent to ${values.userName}`);
-    setStep("reset");
+  const onSendOtp = async (values) => {
+
+    try {
+      setLoading(true);
+      setUserName(values.userName);
+
+      const res = await generateOTP(values.userName);
+
+      if (res?.responseCode === "200") {
+        message.success(res.responseMessage || "OTP sent successfully");
+        setStep("reset");
+        setOtpVerified(false); // reset state
+      } else {
+        message.error(res?.responseMessage || "Failed to send OTP");
+      }
+    } catch (err) {
+      message.error("Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const onResetPassword = (values) => {
-    if (values.otp === "123456") {
-      message.success("Password reset successful! Please login again.");
-      setStep("login");
-    } else {
-      message.error("Invalid OTP, please try again.");
+  const onVerifyOtp = async (otp) => {
+    try {
+      setOtpLoading(true);
+
+      const res = await verifyOTP(userName, otp);
+
+      if (res?.responseCode === "200") {
+        message.success("OTP verified successfully");
+        setOtpVerified(true);
+      } else {
+        message.error(res?.responseMessage || "Invalid OTP");
+        setOtpVerified(false);
+      }
+    } catch (err) {
+      message.error("OTP verification failed");
+      setOtpVerified(false);
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const onResetPassword = async (values) => {
+    if (!otpVerified) {
+      message.error("Please verify OTP first");
+      return;
+    }
+
+    try {
+      setResetLoading(true);
+
+      const res = await resetPassword(userName, values.newPassword);
+
+      if (res?.responseCode === "200") {
+        message.success("Password reset successful! Please login again.");
+        setStep("login");
+      } else {
+        message.error(res?.responseMessage || "Reset password failed");
+      }
+    } catch (err) {
+      message.error("Reset password failed");
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -236,23 +296,59 @@ const Login = () => {
               <div className="mb-3 text-dark">
                 <strong>Reset Password</strong>
               </div>
+
               <Form layout="vertical" onFinish={onResetPassword}>
+                {/* OTP Field + Verify Button */}
                 <Form.Item
                   name="otp"
                   rules={[{ required: true, message: "Enter the OTP" }]}
                 >
-                  <Input placeholder="Enter OTP (123456)" />
+                  <Input.Group compact style={{display:'flex',flexDirection:'row'}}>
+                    <Input
+                      // style={{ width: "70%" }}
+                      placeholder="Enter OTP"
+                      disabled={otpVerified}
+                    />
+                    <Button
+                      type="primary"
+                      loading={otpLoading}
+                      disabled={otpVerified}
+                      onClick={() => {
+                        const otp = document.querySelector(
+                          'input[placeholder="Enter OTP"]'
+                        )?.value;
+                        if (!otp) {
+                          message.error("Please enter OTP");
+                          return;
+                        }
+                        onVerifyOtp(otp);
+                      }}
+                    >
+                      {otpVerified ? "Verified" : "Verify"}
+                    </Button>
+                  </Input.Group>
                 </Form.Item>
+
+                {/* New Password */}
                 <Form.Item
                   name="newPassword"
                   rules={[{ required: true, message: "Enter new password" }]}
                 >
                   <Input.Password placeholder="New Password" />
                 </Form.Item>
-                <Button type="primary" htmlType="submit" block>
+
+                {/* Reset Button */}
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  loading={resetLoading}
+                  disabled={!otpVerified}
+                >
                   Reset Password
                 </Button>
               </Form>
+
               <div className="text-center mt-3">
                 <span
                   style={{ cursor: "pointer" }}

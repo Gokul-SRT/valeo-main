@@ -48,6 +48,47 @@ export const login = async (username, password) => {
 		throw err;
 	}
 };
+
+export async function generateOTP(userName) {
+  return serverApi
+    .post(
+      "generateOTP",
+      { userName, tenantId:'valeo' },
+      { headers: { "Content-Type": "application/json" } }
+    )
+    .then((response) => response.data)
+    .catch((err) => {
+      console.error("Generate OTP API error:", err);
+      throw err;
+    });
+}
+export async function verifyOTP(userName, otp) {
+  return serverApi
+    .post(
+      "verifyOTP",
+      { userName, otp, tenantId:'valeo' },
+      { headers: { "Content-Type": "application/json" } }
+    )
+    .then((response) => response.data)
+    .catch((err) => {
+      console.error("Verify OTP API error:", err);
+      throw err;
+    });
+}
+export async function resetPassword(userName, password) {
+  return serverApi
+    .post(
+      "resetPassword",
+      { userName, password },
+      { headers: { "Content-Type": "application/json" } }
+    )
+    .then((response) => response.data)
+    .catch((err) => {
+      console.error("Reset Password API error:", err);
+      throw err;
+    });
+}
+
 export const check = async () => {
 	try {
 		
