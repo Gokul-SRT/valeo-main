@@ -8,9 +8,8 @@ import {
 } from "react-router-dom";
 import { connect } from "react-redux";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
-
+import PublicRoute from "../component/PublicRoute";
 import ProtectedRoute from "../component/ProtectedRoute";
-
 
 const Login = lazy(() => import("../pages/Login"));
 const Onboard = lazy(() => import("../pages/Onboard"));
@@ -18,15 +17,15 @@ const Auth404 = lazy(() => import("../pages/Errors/404"));
 const Auth500 = lazy(() => import("../pages/Errors/500"));
 
 const routes = [
- 
-  { path: "/", Component: Login, exact: true, public: true },
-  { path: "/login", Component: Login, exact: true, public: true },
- 
-  { path: "/auth/404", Component: Auth404, exact: true, public: true },
-  { path: "/auth/500", Component: Auth500, exact: true, public: true },
- 
-  { path: "/onboard", Component: Onboard, exact: true, protected: true },
+  { path: "/", Component: Login, public: true },
+  { path: "/login", Component: Login, public: true },
+
+  { path: "/auth/404", Component: Auth404, public: true },
+  { path: "/auth/500", Component: Auth500, public: true },
+
+  { path: "/onboard", Component: Onboard, protected: true },
 ];
+
 
 const mapStateToProps = ({ settings }) => ({
   routerAnimation: settings?.routerAnimation || "fade",
@@ -34,7 +33,7 @@ const mapStateToProps = ({ settings }) => ({
 
 const AnimatedRoutes = ({ routerAnimation }) => {
   const location = useLocation();
-  const nodeRef = useRef(null); 
+  const nodeRef = useRef(null);
 
   return (
     <SwitchTransition>
@@ -45,33 +44,32 @@ const AnimatedRoutes = ({ routerAnimation }) => {
         timeout={routerAnimation === "none" ? 0 : 300}
         nodeRef={nodeRef}
       >
-        
         <div ref={nodeRef}>
           <Routes location={location}>
-          
-            {routes.map(
-              ({ path, Component,protected: isProtected }) => (
-                <Route
-                  key={path}
-                  path={path}
-                  element={
-                    <div className={routerAnimation}>
-                      <Suspense>
-                        {isProtected ? (
-                          <ProtectedRoute>
-                            <Component />
-                          </ProtectedRoute>
-                        ) : (
+            {routes.map(({ path, Component, protected: isProtected }) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  <div className={routerAnimation}>
+                    <Suspense>
+                      {isProtected ? (
+                        <ProtectedRoute>
                           <Component />
-                        )}
-                      </Suspense>
-                    </div>
-                  }
-                />
-              )
-            )}
+                        </ProtectedRoute>
+                      ) : path === "/" || path === "/login" ? (
+                        <PublicRoute>
+                          <Component />
+                        </PublicRoute>
+                      ) : (
+                        <Component />
+                      )}
+                    </Suspense>
+                  </div>
+                }
+              />
+            ))}
 
-           
             <Route path="*" element={<Navigate to="/auth/404" replace />} />
           </Routes>
         </div>
