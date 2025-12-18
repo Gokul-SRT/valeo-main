@@ -69,7 +69,7 @@ const Login = () => {
           localStorage.setItem("user", JSON.stringify(user));
 
           // Show success notification
-          toast.success("Login successful! Redirecting...");
+          toast.success("Login successful!");
 
           // ensure navigation happens after storing tokens
           setTimeout(
@@ -99,19 +99,18 @@ const Login = () => {
   };
 
   const onSendOtp = async (values) => {
-
     try {
       setLoading(true);
       setUserName(values.userName);
 
       const res = await generateOTP(values.userName);
-      
+
       if (res?.responseCode === "200") {
-        toast.success(res.responseDataMessage || "OTP sent successfully");
+        toast.success(res?.responseDataMessage);
         setStep("reset");
         setOtpVerified(false); // reset state
       } else {
-        toast.error(res?.responseDataMessage || "Failed to send OTP");
+        toast.error(res?.responseDataMessage);
       }
     } catch (err) {
       toast.error("Failed to send OTP");
@@ -274,9 +273,9 @@ const Login = () => {
                   name="userName"
                   rules={[{ required: true, message: "Enter User Name" }]}
                 >
-                  <Input placeholder="Enter User Name" />
+                  <Input size="large" placeholder="Enter User Name" />
                 </Form.Item>
-                <Button type="primary" htmlType="submit" block>
+                <Button type="primary" htmlType="submit" size="large" block>
                   Send OTP
                 </Button>
               </Form>
@@ -302,22 +301,24 @@ const Login = () => {
                 {/* OTP Field + Verify Button */}
                 <Form.Item
                   name="otp"
-                  rules={[{ required: true, message: "Enter the OTP" }]}
+                  rules={
+                    otpVerified
+                      ? [] 
+                      : [{ required: true, message: "Enter the OTP" }]
+                  }
                 >
-                  <Input.Group compact style={{display:'flex',flexDirection:'row'}}>
-                    <Input
-                      // style={{ width: "70%" }}
-                      placeholder="Enter OTP"
-                      disabled={otpVerified}
-                    />
+                  <Input.Group compact style={{ display: "flex" }}>
+                    <Input size="large" placeholder="Enter OTP" disabled={otpVerified} />
                     <Button
                       type="primary"
                       loading={otpLoading}
+                      size="large"
                       disabled={otpVerified}
                       onClick={() => {
                         const otp = document.querySelector(
                           'input[placeholder="Enter OTP"]'
                         )?.value;
+
                         if (!otp) {
                           toast.error("Please enter OTP");
                           return;
@@ -335,7 +336,7 @@ const Login = () => {
                   name="newPassword"
                   rules={[{ required: true, message: "Enter new password" }]}
                 >
-                  <Input.Password placeholder="New Password" />
+                  <Input.Password size="large" placeholder="New Password" />
                 </Form.Item>
 
                 {/* Reset Button */}
@@ -343,6 +344,7 @@ const Login = () => {
                   type="primary"
                   htmlType="submit"
                   block
+                  size="large"
                   loading={resetLoading}
                   disabled={!otpVerified}
                 >
