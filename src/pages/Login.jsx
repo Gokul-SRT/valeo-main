@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Input, Button, Form, message } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +30,7 @@ const Login = () => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
 
   // 🔑 Login handler
   const onFinishLogin = (values) => {
@@ -109,6 +110,7 @@ const Login = () => {
         toast.success(res?.responseDataMessage);
         setStep("reset");
         setOtpVerified(false); // reset state
+        setOtpTimer(OTP_EXPIRY_SECONDS);
       } else {
         toast.error(res?.responseDataMessage);
       }
@@ -117,6 +119,22 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (otpTimer <= 0 || otpVerified) return;
+
+    const interval = setInterval(() => {
+      setOtpTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [otpTimer, otpVerified]);
+
+  const formatTime = (seconds) => {
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${m}:${s}`;
   };
 
   const onVerifyOtp = async (otp) => {
@@ -163,6 +181,7 @@ const Login = () => {
       setResetLoading(false);
     }
   };
+  const OTP_EXPIRY_SECONDS = 30 * 60; // 30 minutes
 
   return (
     <div
@@ -275,7 +294,14 @@ const Login = () => {
                 >
                   <Input size="large" placeholder="Enter User Name" />
                 </Form.Item>
-                <Button type="primary" htmlType="submit" size="large" block>
+
+                <Button
+                  loading={loading}
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  block
+                >
                   Send OTP
                 </Button>
               </Form>
@@ -303,32 +329,52 @@ const Login = () => {
                   name="otp"
                   rules={
                     otpVerified
-                      ? [] 
+                      ? []
                       : [{ required: true, message: "Enter the OTP" }]
                   }
                 >
-                  <Input.Group compact style={{ display: "flex" }}>
-                    <Input size="large" placeholder="Enter OTP" disabled={otpVerified} />
-                    <Button
-                      type="primary"
-                      loading={otpLoading}
-                      size="large"
-                      disabled={otpVerified}
-                      onClick={() => {
-                        const otp = document.querySelector(
-                          'input[placeholder="Enter OTP"]'
-                        )?.value;
+                  <>
+                    <Input.Group compact style={{ display: "flex" }}>
+                      <Input
+                        size="large"
+                        placeholder="Enter OTP"
+                        disabled={otpVerified || otpTimer === 0}
+                      />
+                      <Button
+                        type="primary"
+                        loading={otpLoading}
+                        size="large"
+                        disabled={otpVerified || otpTimer === 0}
+                        onClick={() => {
+                          const otp = document.querySelector(
+                            'input[placeholder="Enter OTP"]'
+                          )?.value;
 
-                        if (!otp) {
-                          toast.error("Please enter OTP");
-                          return;
-                        }
-                        onVerifyOtp(otp);
-                      }}
-                    >
-                      {otpVerified ? "Verified" : "Verify"}
-                    </Button>
-                  </Input.Group>
+                          if (!otp) {
+                            toast.error("Please enter OTP");
+                            return;
+                          }
+                          onVerifyOtp(otp);
+                        }}
+                      >
+                        {otpVerified ? "Verified" : "Verify"}
+                      </Button>
+                    </Input.Group>
+
+                    {!otpVerified && otpTimer > 0 && (
+                      <div
+                        style={{ marginTop: 6,marginLeft:4, color: "#faad14", fontSize: 13 }}
+                      >
+                        OTP expires in: <b>{formatTime(otpTimer)}</b>
+                      </div>
+                    )}
+
+                    {!otpVerified && otpTimer === 0 && (
+                      <div style={{ marginTop: 6, color: "red", fontSize: 13 }}>
+                        OTP expired. Please resend OTP.
+                      </div>
+                    )}
+                  </>
                 </Form.Item>
 
                 {/* New Password */}
