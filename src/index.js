@@ -44,7 +44,6 @@ root.render(
   <Provider store={store}>
   <ToastContainer position="top-right" autoClose={3000} style={{ marginTop: '70px' }} />
     <Router history={history} />
-
   </Provider>
 );
 

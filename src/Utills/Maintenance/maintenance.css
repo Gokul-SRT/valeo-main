@@ -1,0 +1,33 @@
+.maintenance-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  color: #0f172a;
+  text-align: center;
+  padding: 20px;
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.maintenance-logo {
+  height: 50px;
+  object-fit: contain;
+}
+
+.maintenance-container h1 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.maintenance-container p {
+  font-size: 1.1rem;
+  opacity: 0.85;
+  max-width: 520px;
+}
